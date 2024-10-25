@@ -18,12 +18,15 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
         let dataArray: any[] = [];
         const filePath = path.join(outDir, `${pair}.xlsx`);
 
+        let startTime: number | undefined
+
         // Check if the file exists
         const fileExists = fs.existsSync(filePath);
-        const file: any[] = readExcelFile(filePath);
-        const lastTimestamp = new Date(file[file.length - 1]["Open Time"]).getTime();
-
-        let startTime = fileExists ? lastTimestamp : (startTimestamp ? startTimestamp : undefined);
+        if (fileExists) {
+            const file: any[] = readExcelFile(filePath);
+            const lastTimestamp = new Date(file[file.length - 1]["Open Time"]).getTime();
+            startTime = fileExists ? lastTimestamp : (startTimestamp ? startTimestamp : undefined);
+        }
 
         try {
             while (true) {
