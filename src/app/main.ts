@@ -16,7 +16,7 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
     // Fetch market data for each pair
     for (const pair of selectedPairs) {
         let dataArray: any[] = [];
-        const filePath = path.join(outDir, `${pair}.xlsx`);
+        const filePath = path.join(outDir, `${pair}.csv`);
 
         let startTime: number | undefined
 

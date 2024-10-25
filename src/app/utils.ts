@@ -47,7 +47,7 @@ export function writeExcelFile(filePath: string, data: any[]) {
         XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "Sheet1");
 
         // Generate a buffer from the workbook
-        const buffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: 'xlsx' });
+        const buffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
 
         // Write the buffer to the file system
         fs.writeFileSync(filePath, buffer);
