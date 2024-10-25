@@ -1,6 +1,6 @@
 'use server'
 
-import { appendExcelFile, fetchData } from "./utils";
+import { appendExcelFile, fetchData, readExcelFile } from "./utils";
 import fs from "fs";
 import path from "path";
 
@@ -18,11 +18,16 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
         let dataArray: any[] = [];
         const filePath = path.join(outDir, `${pair}.xlsx`);
 
-        let startTime = startTimestamp || undefined;
+        // Check if the file exists
+        const fileExists = fs.existsSync(filePath);
+        const file: any[] = readExcelFile(filePath);
+        const lastTimestamp = new Date(file[file.length - 1]["Open Time"]).getTime();
+
+        let startTime = fileExists ? lastTimestamp : (startTimestamp ? startTimestamp : undefined);
 
         try {
             while (true) {
-                const fetchUrl = `https://data-api.binance.vision/api/v3/klines?symbol=${pair}&interval=${interval}${startTime ? '&startTime=' + startTime : ''}${endTimestamp ? '&endTime=' + endTimestamp : ''}`;
+                const fetchUrl = `https://data-api.binance.vision/api/v3/klines?symbol=${pair}&interval=${interval}&limit=1000${startTime ? '&startTime=' + startTime : ''}${endTimestamp ? '&endTime=' + endTimestamp : (startTime ? '&endTime=' + Date.now() : '')}`;
                 console.log(fetchUrl);
                 const data = await fetchData(fetchUrl);
 
@@ -44,8 +49,13 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
 
                 dataArray = [...dataArray, ...formattedData];
 
-                startTime = data[data.length - 1][0];
-                console.log("Updated startTime to", startTime);
+                if (startTime) {
+                    startTime = data[data.length - 1][0];
+                    console.log("Updated startTime to", startTime);
+                } else {
+                    break;
+                }
+
             }
         } catch (error) {
             console.error('Error fetching data:', error);

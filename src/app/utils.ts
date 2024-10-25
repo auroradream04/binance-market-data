@@ -15,19 +15,27 @@ export async function getTradingPairs() {
 }
 
 export function readExcelFile(filePath: string) {
-    const workbook = XLSX.readFile(filePath);
-    const sheetNameList = workbook.SheetNames;
-    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNameList[0]]);
-    return data;
+    try {
+        // Normalize the file path
+        const formattedFilePath = path.normalize(filePath);
+
+        // Read the file using fs
+        const fileBuffer = fs.readFileSync(formattedFilePath);
+
+        // Parse the file buffer with xlsx
+        const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+        const sheetNameList = workbook.SheetNames;
+        const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNameList[0]]);
+        
+        return data;
+    } catch (error) {
+        console.error("Error reading Excel file:", error);
+        return [];
+    }
 }
 
 export function writeExcelFile(filePath: string, data: any[]) {
     try {
-        // Ensure data is an array of objects
-        // if (!Array.isArray(data) || data.length === 0 || typeof data[0] !== 'object') {
-        //     return;
-        // }
-
         // Ensure the directory exists
         const dir = path.dirname(filePath);
         if (!fs.existsSync(dir)) {
@@ -41,10 +49,6 @@ export function writeExcelFile(filePath: string, data: any[]) {
         // Generate a buffer from the workbook
         const buffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: 'xlsx' });
 
-        // Log the file path and data length
-        console.log("Attempting to save file to:", filePath);
-        console.log("Data length:", data.length);
-
         // Write the buffer to the file system
         fs.writeFileSync(filePath, buffer);
         console.log("Data saved to", filePath);
@@ -54,23 +58,15 @@ export function writeExcelFile(filePath: string, data: any[]) {
 }
 
 export function appendExcelFile(filePath: string, data: any[]) {
-    const outDir = path.join(process.cwd(), "tesssstt");
-    if (!fs.existsSync(outDir)) {
-        fs.mkdirSync(outDir);
-    }
-
     try {
         // Use path module to ensure correct path handling
         const formattedFilePath = path.normalize(filePath);
 
         if (fs.existsSync(formattedFilePath)) {
-            console.log("APPENDING FILE")
             const oldJsonData = readExcelFile(formattedFilePath);
             const newJsonData = [...oldJsonData, ...data];
-            console.log("HEREEEE")
             writeExcelFile(formattedFilePath, newJsonData);
         } else {
-            console.log("WRITING FILE")
             writeExcelFile(formattedFilePath, data);
         }
     } catch (error) {
