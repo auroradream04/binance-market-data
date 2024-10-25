@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, ChevronsUpDown, Check } from "lucide-react"
+import { generateMarketData } from '@/app/main'
 
 const INTERVALS = ["1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1mo"]
 
@@ -21,12 +22,15 @@ type TProps = {
 
 export default function Dashboard({ tradingPairs = [] }: TProps) {
   const [selectedPairs, setSelectedPairs] = useState<string[]>([])
+  const [filteredPairs, setFilteredPairs] = useState<string[]>(tradingPairs)
+  // const [selectedPairs, setSelectedPairs] = useState<string[]>(["BTCUSDT"]) // Development
   const [interval, setInterval] = useState(INTERVALS[0])
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
   const [selectAll, setSelectAll] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [open, setOpen] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   useEffect(() => {
     console.log("Trading pairs in Dashboard:", tradingPairs);
@@ -41,32 +45,31 @@ export default function Dashboard({ tradingPairs = [] }: TProps) {
     }
   }, [selectAll, tradingPairs])
 
-  // useEffect(() => {
-  //   setFilteredPairs(tradingPairs.filter(pair => 
-  //     pair.toLowerCase().includes(searchTerm.toLowerCase())
-  //   ))
-  // }, [searchTerm, tradingPairs])
+  useEffect(() => {
+    setFilteredPairs(tradingPairs.filter(pair => 
+      pair.toLowerCase().includes(searchTerm.toLowerCase())
+    ))
+  }, [searchTerm])
 
-  const handleDownload = () => {
+  const handleSubmit = async () => {
+    setIsGenerating(true);
     const startTimestamp = startDate ? startDate.getTime() : undefined
     const endTimestamp = endDate ? endDate.getTime() : undefined
 
-    console.log({
-      selectedPairs,
-      interval,
-      startTimestamp,
-      endTimestamp
-    })
-    // Implement your download logic here
+    await generateMarketData(selectedPairs, interval, startTimestamp, endTimestamp)
+    setIsGenerating(false);
   }
 
-  console.log("Trading pairs:", tradingPairs.length)
-  const filteredPairs = useMemo(() => {
-    console.log("Filtering pairs, current tradingPairs:", tradingPairs);
-    return (tradingPairs || []).filter(pair => 
-      pair.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [searchTerm])
+  // const filteredPairs = useMemo(() => {
+  //   console.log("Filtering pairs, current tradingPairs:", tradingPairs);
+  //   return (tradingPairs || []).filter(pair => 
+  //     pair.toLowerCase().includes(searchTerm.toLowerCase())
+  //   )
+  // }, [searchTerm])
+
+  useEffect(() => {
+
+  })
 
   if (!Array.isArray(tradingPairs)) {
     console.error("tradingPairs is not an array:", tradingPairs);
@@ -218,8 +221,9 @@ export default function Dashboard({ tradingPairs = [] }: TProps) {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={handleDownload}>Download CSV</Button>
+        <Button disabled={isGenerating} className="w-full" onClick={() => handleSubmit()}>Generate Market Data</Button>
       </CardFooter>
     </Card>
   )
 }
+
