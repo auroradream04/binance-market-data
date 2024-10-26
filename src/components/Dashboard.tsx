@@ -65,7 +65,7 @@ export default function Dashboard({ tradingPairs = [] }: TProps) {
     return (
         <Card className="w-full max-w-3xl mx-auto">
             <CardHeader>
-                <CardTitle>Binance Historical Data Download</CardTitle>
+                <CardTitle className="text-2xl leading-5">Binance Historical Data Download</CardTitle>
                 <CardDescription>
                     Select trading pairs and time range to download historical
                     market data
