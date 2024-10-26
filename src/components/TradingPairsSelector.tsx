@@ -45,25 +45,26 @@ export default function TradingPairsSelector({
     const [baseCurrency, setBaseCurrency] = useState(BASE_CURRENCIES[0]);
 
     useEffect(() => {
+        let filtered = tradingPairs;
+
+        if (baseCurrency !== "ALL") {
+            filtered = filtered.filter((pair) => pair.endsWith(baseCurrency));
+        }
+
+        if (searchTerm) {
+            filtered = filtered.filter((pair) =>
+                pair.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        setFilteredPairs(filtered);
+
         if (selectAll) {
-            setSelectedPairs(tradingPairs);
+            setSelectedPairs(filtered);
         } else {
             setSelectedPairs([]);
         }
-    }, [selectAll, tradingPairs]);
-
-    useEffect(() => {
-        if (baseCurrency === "ALL") {
-            setFilteredPairs(tradingPairs);
-        } else {
-            const filtered = tradingPairs.filter(
-                (pair) =>
-                    pair.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                    pair.endsWith(baseCurrency)
-            );
-            setFilteredPairs(filtered);
-        }
-    }, [searchTerm, tradingPairs, baseCurrency]);
+    }, [searchTerm, tradingPairs, baseCurrency, selectAll]);
 
     const handleSelectPair = (pair: string) => {
         setSelectedPairs((current) =>
@@ -75,26 +76,8 @@ export default function TradingPairsSelector({
 
     return (
         <div className="space-y-2">
-            <div className="space-y-2">
-                <label className="text-sm font-medium">Base Currency</label>
-                <Select value={baseCurrency} onValueChange={setBaseCurrency}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select base currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {BASE_CURRENCIES.map((currency) => (
-                            <SelectItem key={currency} value={currency}>
-                                {currency}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                </div>
-                <div className="pt-2">
-
-                
             <label className="text-sm font-medium">Trading Pairs</label>
-            <div className="flex items-center space-x-2 pt-2">
+            <div className="flex items-center space-x-2">
                 <Checkbox
                     id="selectAll"
                     checked={selectAll}
@@ -108,9 +91,22 @@ export default function TradingPairsSelector({
                 >
                     Select All
                 </label>
-                </div>
             </div>
-
+            <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium">Base Currency</label>
+                <Select value={baseCurrency} onValueChange={setBaseCurrency}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select base currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {BASE_CURRENCIES.map((currency) => (
+                            <SelectItem key={currency} value={currency}>
+                                {currency}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button

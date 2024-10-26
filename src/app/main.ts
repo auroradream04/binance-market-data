@@ -42,12 +42,13 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
                 // Transform the data into an array of objects
                 const formattedData = data.map((item: any[]) => ({
                     "Trading Pair": pair,
-                    "Open Time": new Date(item[0]).toISOString(), // Convert timestamp to ISO string
+                    "Open Date": new Date(item[0]).toISOString().split("T")[0], // Convert timestamp to ISO string
                     "Open Price": parseFloat(item[1]),
                     "High Price": parseFloat(item[2]),
                     "Low Price": parseFloat(item[3]),
                     "Close Price": parseFloat(item[4]),
                     "Volume": parseFloat(item[7]),
+                    "Open Time": new Date(item[0]).toISOString().split("T")[1].split(".")[0],
                 }));
 
                 dataArray = [...dataArray, ...formattedData];
