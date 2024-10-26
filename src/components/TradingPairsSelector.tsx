@@ -76,6 +76,23 @@ export default function TradingPairsSelector({
 
     return (
         <div className="space-y-2">
+            <div className="space-y-2">
+                <label className="text-sm font-medium">Base Currency</label>
+                <Select value={baseCurrency} onValueChange={setBaseCurrency}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select base currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {BASE_CURRENCIES.map((currency) => (
+                            <SelectItem key={currency} value={currency}>
+                                {currency}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+<div className="space-y-2 pt-2">
             <label className="text-sm font-medium">Trading Pairs</label>
             <div className="flex items-center space-x-2">
                 <Checkbox
@@ -91,21 +108,6 @@ export default function TradingPairsSelector({
                 >
                     Select All
                 </label>
-            </div>
-            <div className="flex items-center space-x-2">
-                <label className="text-sm font-medium">Base Currency</label>
-                <Select value={baseCurrency} onValueChange={setBaseCurrency}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select base currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {BASE_CURRENCIES.map((currency) => (
-                            <SelectItem key={currency} value={currency}>
-                                {currency}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
             </div>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -170,6 +172,7 @@ export default function TradingPairsSelector({
                     </Command>
                 </PopoverContent>
             </Popover>
+            </div>
         </div>
     );
 }
