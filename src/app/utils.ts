@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx'
 import fs from 'fs'
 import path from 'path'
+import { BookType } from 'xlsx';
 
 export async function fetchData(url: string) {
     const response = await fetch(url);
@@ -34,7 +35,7 @@ export function readExcelFile(filePath: string) {
     }
 }
 
-export function writeExcelFile(filePath: string, data: any[]) {
+export function writeExcelFile(filePath: string, data: any[], fileFormat: string) {
     try {
         // Ensure the directory exists
         const dir = path.dirname(filePath);
@@ -47,7 +48,7 @@ export function writeExcelFile(filePath: string, data: any[]) {
         XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "Sheet1");
 
         // Generate a buffer from the workbook
-        const buffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
+        const buffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: fileFormat.toLowerCase() as BookType });
 
         // Write the buffer to the file system
         fs.writeFileSync(filePath, buffer);
@@ -57,7 +58,7 @@ export function writeExcelFile(filePath: string, data: any[]) {
     }
 }
 
-export function appendExcelFile(filePath: string, data: any[]) {
+export function appendExcelFile(filePath: string, data: any[], fileFormat: string) {
     try {
         // Use path module to ensure correct path handling
         const formattedFilePath = path.normalize(filePath);
@@ -65,9 +66,9 @@ export function appendExcelFile(filePath: string, data: any[]) {
         if (fs.existsSync(formattedFilePath)) {
             const oldJsonData = readExcelFile(formattedFilePath);
             const newJsonData = [...oldJsonData, ...data];
-            writeExcelFile(formattedFilePath, newJsonData);
+            writeExcelFile(formattedFilePath, newJsonData, fileFormat);
         } else {
-            writeExcelFile(formattedFilePath, data);
+            writeExcelFile(formattedFilePath, data, fileFormat);
         }
     } catch (error) {
         console.error("Error appending to Excel file:", error);

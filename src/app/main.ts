@@ -4,8 +4,8 @@ import { appendExcelFile, fetchData, readExcelFile } from "./utils";
 import fs from "fs";
 import path from "path";
 
-export async function generateMarketData(selectedPairs: string[], interval: string, startTimestamp: number | undefined, endTimestamp: number | undefined) {
-    console.log("Generating market data for", selectedPairs, interval, startTimestamp, endTimestamp)
+export async function generateMarketData(selectedPairs: string[], interval: string, startTimestamp: number | undefined, endTimestamp: number | undefined, fileFormat: string) {
+    console.log("Generating market data for", selectedPairs, interval, startTimestamp, endTimestamp, fileFormat)
 
     // Create an out directory if it doesn't exist
     const outDir = path.join(process.cwd(), "out");
@@ -16,7 +16,7 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
     // Fetch market data for each pair
     for (const pair of selectedPairs) {
         let dataArray: any[] = [];
-        const filePath = path.join(outDir, `${pair}.csv`);
+        const filePath = path.join(outDir, `${pair}.${fileFormat.toLowerCase()}`);
 
         let startTime: number | undefined
 
@@ -65,7 +65,7 @@ export async function generateMarketData(selectedPairs: string[], interval: stri
         }
 
         console.log('Data fetched:', dataArray.length);
-        appendExcelFile(filePath, dataArray);
+        appendExcelFile(filePath, dataArray, fileFormat);
     }
 
     return "Market data generated"

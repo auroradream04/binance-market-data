@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     // Loop the main functionality until process is closed using while loop
     while (true) {
         // Do not await generateMarketData to ensure we're doing the loop interval properly
-        generateMarketData(USD_TRADING_PAIRS, interval, undefined, undefined) // No need for start/end time, it will use the latest data for {interval} time https://developers.binance.com/docs/binance-spot-api-docs/rest-api/public-api-endpoints#uiklines
+        generateMarketData(USD_TRADING_PAIRS, interval, undefined, undefined, "CSV") // No need for start/end time, it will use the latest data for {interval} time https://developers.binance.com/docs/binance-spot-api-docs/rest-api/public-api-endpoints#uiklines
         // console.log(`Updated all pairs for: ${new Date().toISOString()}. Next update in ${loopInterval} minutes`) cant log as we're not awaiting the function
 
         await new Promise(resolve => setTimeout(resolve, parseInt(loopInterval) * 60 * 1000))
