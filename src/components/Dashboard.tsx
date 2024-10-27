@@ -65,25 +65,19 @@ export default function Dashboard({ tradingPairs = [] }: TProps) {
     return (
         <Card className="w-full max-w-3xl mx-auto">
             <CardHeader>
-                <CardTitle className="text-2xl leading-5">Binance Historical Data Download</CardTitle>
+                <CardTitle className="text-2xl leading-5">Binance Market Data</CardTitle>
                 <CardDescription>
-                    Select trading pairs and time range to download historical
+                    Select trading pairs and time range to download Binance market data
                     market data
                 </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="grid grid-cols-2 gap-4">
                 <TradingPairsSelector
                     tradingPairs={tradingPairs}
                     selectedPairs={selectedPairs}
                     setSelectedPairs={setSelectedPairs}
                 />
-                <IntervalSelector
-                    interval={interval}
-                    setInterval={setInterval}
-                    intervals={INTERVALS}
-                />
-                <div className="grid grid-cols-2 gap-2">
-                    <DateSelector
+                <DateSelector
                         date={startDate}
                         setDate={setStartDate}
                         label="Start Date"
@@ -93,7 +87,12 @@ export default function Dashboard({ tradingPairs = [] }: TProps) {
                         setDate={setEndDate}
                         label="End Date"
                     />
-                </div>
+                <IntervalSelector
+                    interval={interval}
+                    setInterval={setInterval}
+                    intervals={INTERVALS}
+                />
+                    
                 <FileFormatSelector
                     fileFormat={fileFormat}
                     setFileFormat={setFileFormat}

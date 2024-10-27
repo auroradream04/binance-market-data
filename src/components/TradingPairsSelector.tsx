@@ -75,7 +75,7 @@ export default function TradingPairsSelector({
     };
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2 col-span-2">
             <div className="space-y-2">
                 <label className="text-sm font-medium">Base Currency</label>
                 <Select value={baseCurrency} onValueChange={setBaseCurrency}>
